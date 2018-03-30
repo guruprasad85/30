@@ -1,0 +1,54 @@
+resources:
+  - name: shipdemo-cluster-ecs
+    type: cluster
+    integration: awskey1 # replace with your AWS integration name
+    pointer:
+      # replace with your Amazon ECS cluster name and region
+      sourceName : "mar-ecs-test"
+      region: "us-east-2"
+    flags:
+      - amazon-ecr-ecs-loadbalancer
+
+# add AWS ALB target group for TEST
+  - name: shipdemo-alb-test     #required
+    type: loadBalancer      #required
+    pointer:
+      # replace with the ARN for your Amazon EC/2 Application Load Balancer Target Group
+      sourceName: "arn:aws:elasticloadbalancing:us-east-2:530443623308:loadbalancer/app/30march2018/c8138a9cde588605"
+      method: application
+    flags:
+      - amazon-ecr-ecs-loadbalancer
+
+
+  - name: shipdemo-img-options-ecs-test
+    type: dockerOptions
+    version:
+      memory: 64
+      cpuShares: 128
+      portMappings:
+        - 0:80
+      labels:
+        app: shipdemo-node-ecr-deploy-ecs-loadbalancer
+        env: test
+    flags:
+      - amazon-ecr-ecs-loadbalancer
+
+# env vars for Test
+  - name: shipdemo-params-ecs-test
+    type: params
+    version:
+      params:
+        ENVIRONMENT: "TEST"
+        PORT: 80
+    flags:
+      - amazon-ecr-ecs-loadbalancer
+
+################################
+
+# set service version seed
+  - name: shipdemo-version-ecs
+    type: version
+    seed:
+      versionName: "1.1.0"
+    flags:
+      - amazon-ecr-ecs-loadbalancer
